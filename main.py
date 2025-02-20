@@ -1,51 +1,35 @@
-import random, answer, text
+import random
+
+import answer, text
 
 
-# TODO: Переписать код в функциональном стиле.
-#  - Декомпозировать задачу: Одна функция решает только одну задачу
-
-# TODO: Вывести информацию об игре:
-#  - Название игры
-#  - В каком диапазоне было загадано число
-#  - Кол-во возможных попыток
-
-
-def game_logic():
-    random_num = random.randrange(1, 100)
-    attempt_amount = 0  # Число попыток
-
+def run_game_logic() -> None:
+    guess_num: int = random.randrange(1, 100)
     print(text.game_name, text.sep, text.rules, text.sep)
 
-
+    attempt_amount: int = 0
     while attempt_amount < 3:
         attempt_amount += 1
-        try:
+
+        try:  # пробовать
             user_answer = answer.get_user_num()
-            # TODO: Что если, пользователь ввел число вне диапазона?
-            # Вынес запрос ответа пользователя (с проверкой входного значения) в отдельный модуль
-
-            if user_answer == random_num:
-                print(f'Вы угадали, загаданное число: {random_num}, за {attempt_amount} попыток')
+            answer.validate_num(user_answer)
+        except ValueError as err_msg:  # поймать
+            print(err_msg)
+        else:  # тогда
+            if user_answer == guess_num:
+                print(text.winner_msg.format(guess_num, attempt_amount))
                 break
+            print(answer.get_hint(user_answer, guess_num))
 
-            if user_answer > random_num:
-                print('Ваше число больше')
-            elif user_answer < random_num:
-                print('Ваше число меньше')
-        except ValueError:
-            print("Неправильное значение")
+        finally:  # завершение
+            pass
 
     else:
-        # TODO: Вывести информацию какое число было загадано.
-        # Вывел
         print(text.sep)
         print("Кол-во попыток исчерпано")
-        print(f"Загаданное число {random_num}")
+        print(f"Загаданное число {guess_num}")
 
 
-def run():
-    game_logic()
-
-
-if __name__ == '__main__':
-    run()
+if __name__ == "__main__":
+    run_game_logic()
